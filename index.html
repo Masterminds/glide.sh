@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Glide | Package Management For Go</title>
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+
+</head>
+<body>
+    <header class="wrapper">
+        <h1><a href="/" title="Glide">Glide</a></h1>
+        <nav>
+          <ul>
+            <li>
+              <a href="https://glide.readthedocs.org">Documentation</a>
+            </li>
+            <li>
+              <a href="https://github.com/Masterminds/glide">GitHub</a>
+            </li>
+          </ul>
+        </nav>
+    </header>
+    <div class="headline wrapper">
+        <img src="/assets/logo-small.png"><br>
+        <h2>Package Management for Go</h2>
+        <p>Semantic Versions and Ranges &bull; Git, Bzr, Hg, Svn &bull; Works with Go toolchain<br>
+        Leverages vendor directory &bull; Imports from Godep, GB, GPM &bull; Private Repos and Forks</p>
+    </div>
+    <div id="content">
+        <div class="wrapper">
+            <div class="row">
+                <div class="description">
+                    <h2>Download</h2>
+                    <p>
+                        Download the latest release of Glide.
+                    </p>
+                </div>
+                <div class="detail">
+                    <div class="button-wrapper">
+                        <a href="https://github.com/Masterminds/glide/releases" class="button">Download</a>
+                    </div>
+                </div>
+            </div>
+          <div class="row">
+              <div class="description">
+                  <h2>Initialization</h2>
+                  <p>
+                      Scan a codebase and create a <a href="https://glide.readthedocs.org/en/latest/glide.yaml/"><code>glide.yaml</code></a> file containing the dependencies.
+                  </p>
+              </div>
+              <div class="detail">
+                  <pre><code>
+$ glide init
+                  </code></pre>
+              </div>
+          </div>
+          <div class="row">
+              <div class="description">
+                  <h2>Additional Configuration</h2>
+                  <p>
+                      Optionally, edit the <a href="https://glide.readthedocs.org/en/latest/glide.yaml/"><code>glide.yaml</code></a>
+                      file to add <a href="https://glide.readthedocs.org/en/latest/versions/">versions</a> and other information.
+                  </p>
+              </div>
+              <div class="detail">
+                  <pre><code>
+$ edit glide.yaml
+                  </code></pre>
+              </div>
+          </div>
+          <div class="row">
+              <div class="description">
+                  <h2>Resolve The Dependency Tree</h2>
+                  <p>
+                      Install the latest dependencies into the <a href="https://glide.readthedocs.org/en/latest/vendor/"><code>vendor</code></a>
+                      directory matching the version resolution information.
+                      The complete dependency tree is installed, importing Glide,
+                      Godep, GB, and GPM configuration along the way. A
+                      <a href="http:s//glide.readthedocs.org/en/latest/glide.lock/">lock file</a> is created from the final output.
+                  </p>
+              </div>
+              <div class="detail">
+                  <pre><code>
+$ glide update
+                  </code></pre>
+              </div>
+          </div>
+          <div class="row">
+              <div class="description">
+                  <h2>Reproducible Installations</h2>
+                  <p>
+                      Install the dependencies and revisions listed in the lock file into the <code>vendor</code>
+                      directory. If no lock file exists an update is run.
+                  </p>
+              </div>
+              <div class="detail">
+                  <pre><code>
+$ glide install
+                  </code></pre>
+              </div>
+          </div>
+          <div class="row">
+              <div class="description">
+                  <h2>Add More Dependencies</h2>
+                  <p>
+                      Add a new dependency to the <code>glide.yaml</code>, install the
+                      dependency, and re-resolve the dependency tree. Optionally, put
+                      a version after an anchor.
+                  </p>
+              </div>
+              <div class="detail">
+                  <pre><code>
+$ glide get github.com/foo/bar
+                  </code></pre>
+                  Or
+                  <pre><code>
+$ glide get github.com/foo/bar#^1.2.3
+                  </code></pre>
+              </div>
+          </div>
+        </div>
+    </div>
+</body>
+</html>

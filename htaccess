@@ -1,0 +1,20 @@
+---
+permalink: .htaccess
+---
+ErrorDocument 404 /404.html
+Options +Multiviews
+
+AddOutputFilterByType DEFLATE text/css text/html text/plain text/xml text/javascript application/x-javascript
+
+# Requires mod_expires to be enabled.
+<IfModule mod_expires.c>
+  # Enable expirations.
+  ExpiresActive On
+
+  # Cache all files for 2 weeks after access (A).
+  ExpiresDefault A1209600
+
+  <FilesMatch \.html$>
+    ExpiresActive Off
+  </FilesMatch>
+</IfModule>
