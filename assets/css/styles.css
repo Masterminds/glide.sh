@@ -150,6 +150,10 @@ header nav ul li {
     padding-top: 5px;
 }
 
+.description-right {
+    float: right;
+}
+
 .detail {
     float: right;
     width: 48%;
@@ -188,6 +192,11 @@ pre {
     text-decoration: none;
     color: #fff;
     background: #b8160e;
+}
+
+.divider {
+    border-top: 1px solid #fff;
+    padding-top: 20px;
 }
 
 @media screen and (max-width: 44.9375em) {
