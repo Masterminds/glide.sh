@@ -17,4 +17,6 @@ AddOutputFilterByType DEFLATE text/css text/html text/plain text/xml text/javasc
 </IfModule>
 
 Redirect 307 /docs/versions/ https://glide.readthedocs.io/en/latest/versions/
+Redirect 307 /docs/versions https://glide.readthedocs.io/en/latest/versions/
 Redirect 307 /docs/glide.yaml/ https://glide.readthedocs.io/en/latest/glide.yaml/
+Redirect 307 /docs/glide.yaml https://glide.readthedocs.io/en/latest/glide.yaml/
