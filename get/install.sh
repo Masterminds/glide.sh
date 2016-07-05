@@ -1,5 +1,17 @@
+#!/usr/bin/env sh
+
+# The install script is licensed under the MIT license Glide itself is under.
+# See https://github.com/Masterminds/glide/blob/master/LICENSE for more details.
+
+# To run this script execute:
+#   `curl https://glide.sh/get | sh`
+
 PROJECT_NAME="glide"
 
+# LGOBIN represents the local bin location. This can be either the GOBIN, if set,
+# or the GOPATH/bin.
+
+LGOBIN=""
 
 verifyGoInstallation() {
 	GO=$(which go)
@@ -11,19 +23,26 @@ verifyGoInstallation() {
 		echo "$PROJECT_NAME needs environment variable "'$GOPATH'". Set it before continue."
 		exit 1
 	fi
-	if [ -z "$GOBIN" ]; then
-		echo "$PROJECT_NAME needs environment variable "'$GOBIN'". Set it before continue."
-		exit 1
+	if [ -n "$GOBIN" ]; then
+		if [ ! -d "$GOBIN" ]; then
+			echo "$GOBIN "'($GOBIN)'" folder not found. Please create it before continue."
+			exit 1
+		fi
+		LGOBIN="$GOBIN"
+	else
+		if [ ! -d "$GOPATH/bin" ]; then
+			echo "$GOPATH/bin "'($GOPATH/bin)'" folder not found. Please create it before continue."
+			exit 1
+		fi
+		LGOBIN="$GOPATH/bin"
 	fi
-	if [ ! -d "$GOBIN" ]; then
-		echo "$GOBIN "'($GOBIN)'" folder not found. Please create it before continue."
-		exit 1
-	fi
+
 }
 
 initArch() {
 	ARCH=$(uname -m)
 	case $ARCH in
+		# TODO(mattfarina) Make arm actually work
 		arm*) ARCH="arm";;
 		x86) ARCH="386";;
 		x86_64) ARCH="amd64";;
@@ -57,7 +76,7 @@ installFile() {
 	mkdir -p "$GLIDE_TMP"
 	tar xf "$GLIDE_TMP_FILE" -C "$GLIDE_TMP"
 	GLIDE_TMP_BIN="$GLIDE_TMP/$OS-$ARCH/$PROJECT_NAME"
-	cp "$GLIDE_TMP_BIN" "$GOBIN"
+	cp "$GLIDE_TMP_BIN" "$LGOBIN"
 }
 
 bye() {
@@ -72,7 +91,7 @@ testVersion() {
 	set +e
 	GLIDE="$(which $PROJECT_NAME)"
 	if [ "$?" = "1" ]; then
-		echo "$PROJECT_NAME not found. Did you add "'$GOBIN'" to your "'$PATH?'
+		echo "$PROJECT_NAME not found. Did you add "'$LGOBIN'" to your "'$PATH?'
 		exit 1
 	fi
 	set -e
