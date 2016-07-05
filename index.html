@@ -21,6 +21,20 @@
 
   </script>
 
+  <script type="text/javascript">
+    function selectCode(cid) {
+      if (document.selection) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(document.getElementById(cid));
+        range.select();
+      } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(document.getElementById(cid));
+        window.getSelection().addRange(range);
+      }
+    }
+</script>
+
 </head>
 <body>
     <header class="wrapper">
@@ -49,14 +63,17 @@
         <div class="wrapper">
             <div class="row">
                 <div class="description">
-                    <h2>Download</h2>
+                    <h2>Get Glide</h2>
                     <p>
-                        Download the latest release of Glide and, optionally, put it in your path.
+                        Get the latest release of Glide. The script puts it with your Go binaries (<code>$GOPATH/bin</code> or <code>$GOBIN</code>).
                     </p>
                 </div>
                 <div class="detail">
+                    <pre><code>
+<span id="curl-get" onclick="selectCode('curl-get')">curl https://glide.sh/get | sh</span>
+                    </code></pre>
                     <div class="button-wrapper">
-                        <a href="https://github.com/Masterminds/glide/releases" class="button">Download</a>
+                        or&nbsp;&nbsp;&nbsp;<a href="https://github.com/Masterminds/glide/releases" class="button">Download</a>
                     </div>
                 </div>
             </div>
