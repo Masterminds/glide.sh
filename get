@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 # The install script is licensed under the MIT license Glide itself is under.
 # See https://github.com/Masterminds/glide/blob/master/LICENSE for more details.
