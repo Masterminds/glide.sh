@@ -56,9 +56,9 @@ initOS() {
 }
 
 downloadFile() {
-	LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/latest"
-	LATEST_RELEASE_JSON=$(curl -s "$LATEST_RELEASE_URL")
 	TAG=$(curl -s https://glide.sh/version)
+	LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/tags/$TAG"
+	LATEST_RELEASE_JSON=$(curl -s "$LATEST_RELEASE_URL")
 	GLIDE_DIST="glide-$TAG-$OS-$ARCH.tar.gz"
 	# || true forces this command to not catch error if grep does not find anything
 	DOWNLOAD_URL=$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4 | grep "$GLIDE_DIST") || true
