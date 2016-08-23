@@ -56,9 +56,17 @@ initOS() {
 }
 
 downloadFile() {
-	TAG=$(curl -s https://glide.sh/version)
+	if type "curl" > /dev/null; then
+		TAG=$(curl -s https://glide.sh/version)
+	elif type "wget" > /dev/null; then
+		TAG=$(wget -q -O - https://glide.sh/version)
+	fi
 	LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/tags/$TAG"
-	LATEST_RELEASE_JSON=$(curl -s "$LATEST_RELEASE_URL")
+	if type "curl" > /dev/null; then
+		LATEST_RELEASE_JSON=$(curl -s "$LATEST_RELEASE_URL")
+	elif type "wget" > /dev/null; then
+		LATEST_RELEASE_JSON=$(wget -q -O - "$LATEST_RELEASE_URL")
+	fi
 	GLIDE_DIST="glide-$TAG-$OS-$ARCH.tar.gz"
 	# || true forces this command to not catch error if grep does not find anything
 	DOWNLOAD_URL=$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4 | grep "$GLIDE_DIST") || true
@@ -69,7 +77,11 @@ downloadFile() {
 	else
 		GLIDE_TMP_FILE="/tmp/$GLIDE_DIST"
         echo "Downloading $DOWNLOAD_URL"
-        curl -L "$DOWNLOAD_URL" -o "$GLIDE_TMP_FILE"
+		if type "curl" > /dev/null; then
+			curl -L "$DOWNLOAD_URL" -o "$GLIDE_TMP_FILE"
+		elif type "wget" > /dev/null; then
+			wget -q -O "$GLIDE_TMP_FILE" "$DOWNLOAD_URL"
+		fi
 	fi
 }
 
