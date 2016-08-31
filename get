@@ -48,11 +48,17 @@ initArch() {
 		aarch64) ARCH="arm64";;
 		x86) ARCH="386";;
 		x86_64) ARCH="amd64";;
+		i686) ARCH="386";;
 	esac
 }
 
 initOS() {
-    OS=$(echo `uname`|tr '[:upper:]' '[:lower:]')
+	OS=$(echo `uname`|tr '[:upper:]' '[:lower:]')
+
+	if [[ "${OS}" == mingw* ]] ; then
+		# Minimalist GNU for Windows
+		OS='windows'
+	fi
 }
 
 downloadFile() {
