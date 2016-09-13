@@ -56,10 +56,10 @@ initArch() {
 initOS() {
 	OS=$(echo `uname`|tr '[:upper:]' '[:lower:]')
 
-	if [[ "${OS}" == mingw* ]] ; then
+	case "$OS" in
 		# Minimalist GNU for Windows
-		OS='windows'
-	fi
+		mingw*) OS='windows';;
+	esac
 }
 
 downloadFile() {
