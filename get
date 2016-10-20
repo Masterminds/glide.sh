@@ -13,26 +13,27 @@ PROJECT_NAME="glide"
 
 LGOBIN=""
 
+fail() {
+	echo "$1"
+	exit 1
+}
+
 verifyGoInstallation() {
 	GO=$(which go)
 	if [ "$?" = "1" ]; then
-		echo "$PROJECT_NAME needs go. Please intall it first."
-		exit 1
+		fail "$PROJECT_NAME needs go. Please intall it first."
 	fi
 	if [ -z "$GOPATH" ]; then
-		echo "$PROJECT_NAME needs environment variable "'$GOPATH'". Set it before continue."
-		exit 1
+		fail "$PROJECT_NAME needs environment variable "'$GOPATH'". Set it before continue."
 	fi
 	if [ -n "$GOBIN" ]; then
 		if [ ! -d "$GOBIN" ]; then
-			echo "$GOBIN "'($GOBIN)'" folder not found. Please create it before continue."
-			exit 1
+			fail "$GOBIN "'($GOBIN)'" folder not found. Please create it before continue."
 		fi
 		LGOBIN="$GOBIN"
 	else
 		if [ ! -d "$GOPATH/bin" ]; then
-			echo "$GOPATH/bin "'($GOPATH/bin)'" folder not found. Please create it before continue."
-			exit 1
+			fail "$GOPATH/bin "'($GOPATH/bin)'" folder not found. Please create it before continue."
 		fi
 		LGOBIN="$GOPATH/bin"
 	fi
@@ -51,6 +52,7 @@ initArch() {
 		i686) ARCH="386";;
 		i386) ARCH="386";;
 	esac
+	echo "ARCH=$ARCH"
 }
 
 initOS() {
@@ -60,35 +62,68 @@ initOS() {
 		# Minimalist GNU for Windows
 		mingw*) OS='windows';;
 	esac
+	echo "OS=$OS"
+}
+
+initDownloadTool() {
+	if type "curl" > /dev/null; then
+		DOWNLOAD_TOOL="curl"
+	elif type "wget" > /dev/null; then
+		DOWNLOAD_TOOL="wget"
+	else 
+		fail "You need curl or wget as download tool. Please install it first before continue"
+	fi
+	echo "Using $DOWNLOAD_TOOL as download tool"
+}
+
+get() {
+	local url="$2"
+	local body
+	local httpStatusCode
+	echo "Getting $url"
+	if [ "$DOWNLOAD_TOOL" = "curl" ]; then
+		httpResponse=$(curl -sL --write-out HTTPSTATUS:%{http_code} "$url")
+		httpStatusCode=$(echo $httpResponse | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+		body=$(echo "$httpResponse" | sed -e 's/HTTPSTATUS\:.*//g')
+	elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
+		tmpFile=$(mktemp)
+		body=$(wget --server-response --content-on-error -q -O - "$url" 2> $tmpFile || true)
+		httpStatusCode=$(cat $tmpFile | awk '/^  HTTP/{print $2}')
+	fi
+	if [ "$httpStatusCode" != 200 ]; then
+		echo "Request fail with http status code $httpStatusCode"
+		fail "Body: $body"
+	fi
+	eval "$1='$body'"
+}
+
+getFile() {
+	local url="$1"
+	local filePath="$2"
+	if [ "$DOWNLOAD_TOOL" = "curl" ]; then
+		curl -L "$url" -o "$filePath"
+	elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
+		wget -O "$filePath" "$url"
+	fi
 }
 
 downloadFile() {
-	if type "curl" > /dev/null; then
-		TAG=$(curl -s https://glide.sh/version)
-	elif type "wget" > /dev/null; then
-		TAG=$(wget -q -O - https://glide.sh/version)
-	fi
+	get TAG https://glide.sh/version
+	echo "TAG=$TAG"
 	LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/tags/$TAG"
-	if type "curl" > /dev/null; then
-		LATEST_RELEASE_JSON=$(curl -s "$LATEST_RELEASE_URL")
-	elif type "wget" > /dev/null; then
-		LATEST_RELEASE_JSON=$(wget -q -O - "$LATEST_RELEASE_URL")
-	fi
+	echo "LATEST_RELEASE_URL=$LATEST_RELEASE_URL"
+	get LATEST_RELEASE_JSON $LATEST_RELEASE_URL
 	GLIDE_DIST="glide-$TAG-$OS-$ARCH.tar.gz"
+	echo "GLIDE_DIST=$GLIDE_DIST"
 	# || true forces this command to not catch error if grep does not find anything
 	DOWNLOAD_URL=$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4 | grep "$GLIDE_DIST") || true
 	if [ -z "$DOWNLOAD_URL" ]; then
         echo "Sorry, we dont have a dist for your system: $OS $ARCH"
-        echo "You can ask one here: https://github.com/Masterminds/$PROJECT_NAME/issues"
-        exit 1
+        fail "You can ask one here: https://github.com/Masterminds/$PROJECT_NAME/issues"
 	else
 		GLIDE_TMP_FILE="/tmp/$GLIDE_DIST"
         echo "Downloading $DOWNLOAD_URL"
-		if type "curl" > /dev/null; then
-			curl -L "$DOWNLOAD_URL" -o "$GLIDE_TMP_FILE"
-		elif type "wget" > /dev/null; then
-			wget -q -O "$GLIDE_TMP_FILE" "$DOWNLOAD_URL"
-		fi
+		getFile "$DOWNLOAD_URL" "$GLIDE_TMP_FILE"
 	fi
 }
 
@@ -112,8 +147,7 @@ testVersion() {
 	set +e
 	GLIDE="$(which $PROJECT_NAME)"
 	if [ "$?" = "1" ]; then
-		echo "$PROJECT_NAME not found. Did you add "'$LGOBIN'" to your "'$PATH?'
-		exit 1
+		fail "$PROJECT_NAME not found. Did you add "'$LGOBIN'" to your "'$PATH?'
 	fi
 	set -e
 	GLIDE_VERSION=$($PROJECT_NAME -v)
@@ -128,6 +162,7 @@ verifyGoInstallation
 set -e
 initArch
 initOS
+initDownloadTool
 downloadFile
 installFile
 testVersion
