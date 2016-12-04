@@ -98,6 +98,8 @@ installFile() {
 	tar xf "$GLIDE_TMP_FILE" -C "$GLIDE_TMP"
 	GLIDE_TMP_BIN="$GLIDE_TMP/$OS-$ARCH/$PROJECT_NAME"
 	cp "$GLIDE_TMP_BIN" "$LGOBIN"
+	rm -rf $GLIDE_TMP
+	rm -f $GLIDE_TMP_FILE
 }
 
 bye() {
@@ -120,6 +122,7 @@ testVersion() {
 	echo "$GLIDE_VERSION installed succesfully"
 }
 
+	
 # Execution
 
 #Stop execution on any error
