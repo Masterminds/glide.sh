@@ -117,7 +117,7 @@ testVersion() {
 	fi
 	set -e
 	GLIDE_VERSION=$($PROJECT_NAME -v)
-	echo "$GLIDE_VERSION installed succesfully"
+	echo "$GLIDE_VERSION installed successfully"
 }
 
 # Execution
