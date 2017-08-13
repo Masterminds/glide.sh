@@ -16,7 +16,7 @@ LGOBIN=""
 verifyGoInstallation() {
 	GO=$(which go)
 	if [ "$?" = "1" ]; then
-		echo "$PROJECT_NAME needs go. Please intall it first."
+		echo "$PROJECT_NAME needs go. Please install it first."
 		exit 1
 	fi
 	if [ -z "$GOPATH" ]; then
