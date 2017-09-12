@@ -21,7 +21,7 @@ fail() {
 verifyGoInstallation() {
 	GO=$(which go)
 	if [ "$?" = "1" ]; then
-		fail "$PROJECT_NAME needs go. Please intall it first."
+		fail "$PROJECT_NAME needs go. Please install it first."
 	fi
 	if [ -z "$GOPATH" ]; then
 		fail "$PROJECT_NAME needs environment variable "'$GOPATH'". Set it before continue."
@@ -151,7 +151,7 @@ testVersion() {
 	fi
 	set -e
 	GLIDE_VERSION=$($PROJECT_NAME -v)
-	echo "$GLIDE_VERSION installed succesfully"
+	echo "$GLIDE_VERSION installed successfully"
 }
 
 # Execution
