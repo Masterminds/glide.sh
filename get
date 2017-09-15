@@ -61,6 +61,7 @@ initOS() {
 	case "$OS" in
 		# Minimalist GNU for Windows
 		mingw*) OS='windows';;
+		msys*) OS='windows';;
 	esac
 	echo "OS=$OS"
 }
