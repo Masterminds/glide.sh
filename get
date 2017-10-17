@@ -71,10 +71,20 @@ initDownloadTool() {
 		DOWNLOAD_TOOL="curl"
 	elif type "wget" > /dev/null; then
 		DOWNLOAD_TOOL="wget"
-	else 
+	else
 		fail "You need curl or wget as download tool. Please install it first before continue"
 	fi
 	echo "Using $DOWNLOAD_TOOL as download tool"
+}
+
+initGithubAuth() {
+	if [ ! -z "$GITHUB_USER$GITHUB_TOKEN" ]; then
+		if [ "$DOWNLOAD_TOOL" = "curl" ]; then
+			AUTH_OPT="-u $GITHUB_USER:$GITHUB_TOKEN"
+		elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
+			AUTH_OPT="--user $GITHUB_USER --password $GITHUB_TOKEN"
+		fi
+	fi
 }
 
 get() {
@@ -102,9 +112,9 @@ getFile() {
 	local url="$1"
 	local filePath="$2"
 	if [ "$DOWNLOAD_TOOL" = "curl" ]; then
-		curl -L "$url" -o "$filePath"
+		curl $AUTH_OPT -L "$url" -o "$filePath"
 	elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
-		wget -O "$filePath" "$url"
+		wget $AUTH_OPT -O "$filePath" "$url"
 	fi
 }
 
@@ -157,7 +167,7 @@ testVersion() {
 	echo "$GLIDE_VERSION installed successfully"
 }
 
-	
+
 # Execution
 
 #Stop execution on any error
@@ -167,6 +177,7 @@ set -e
 initArch
 initOS
 initDownloadTool
+initGithubAuth
 downloadFile
 installFile
 testVersion
