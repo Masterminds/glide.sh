@@ -93,12 +93,12 @@ get() {
 	local httpStatusCode
 	echo "Getting $url"
 	if [ "$DOWNLOAD_TOOL" = "curl" ]; then
-		httpResponse=$(curl -sL --write-out HTTPSTATUS:%{http_code} "$url")
+		httpResponse=$(curl $AUTH_OPT -sL --write-out HTTPSTATUS:%{http_code} "$url")
 		httpStatusCode=$(echo $httpResponse | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 		body=$(echo "$httpResponse" | sed -e 's/HTTPSTATUS\:.*//g')
 	elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
 		tmpFile=$(mktemp)
-		body=$(wget --server-response --content-on-error -q -O - "$url" 2> $tmpFile || true)
+		body=$(wget $AUTH_OPT --server-response --content-on-error -q -O - "$url" 2> $tmpFile || true)
 		httpStatusCode=$(cat $tmpFile | awk '/^  HTTP/{print $2}')
 	fi
 	if [ "$httpStatusCode" != 200 ]; then
