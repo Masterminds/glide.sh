@@ -115,6 +115,7 @@ downloadFile() {
 	get TAG https://glide.sh/version
 	echo "TAG=$TAG"
 	GLIDE_DIST="glide-$TAG-$OS-$ARCH.tar.gz"
+	echo "GLIDE_DIST=$GLIDE_DIST"
 	DOWNLOAD_URL="https://github.com/Masterminds/$PROJECT_NAME/releases/download/$TAG/$GLIDE_DIST"
 	GLIDE_TMP_FILE="/tmp/$GLIDE_DIST"
 	echo "Downloading $DOWNLOAD_URL"
@@ -125,7 +126,6 @@ downloadFile() {
 		LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/tags/$TAG"
 		echo "LATEST_RELEASE_URL=$LATEST_RELEASE_URL"
 		get LATEST_RELEASE_JSON $LATEST_RELEASE_URL
-		echo "GLIDE_DIST=$GLIDE_DIST"
 		# || true forces this command to not catch error if grep does not find anything
 		DOWNLOAD_URL=$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4 | grep "$GLIDE_DIST") || true
 		if [ -z "$DOWNLOAD_URL" ]; then
