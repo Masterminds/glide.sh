@@ -111,7 +111,7 @@ getFile() {
 downloadFile() {
 	get TAG https://glide.sh/version
 	echo "TAG=$TAG"
-	LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/tags/$TAG"
+	LATEST_RELEASE_URL="https://github.com/Masterminds/$PROJECT_NAME/releases/download/$TAG/$PROJECT_NAME-$TAG-$OS-$ARCH.tar.gz"
 	echo "LATEST_RELEASE_URL=$LATEST_RELEASE_URL"
 	get LATEST_RELEASE_JSON $LATEST_RELEASE_URL
 	GLIDE_DIST="glide-$TAG-$OS-$ARCH.tar.gz"
