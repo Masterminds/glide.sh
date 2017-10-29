@@ -132,7 +132,6 @@ downloadFile() {
 			echo "Sorry, we dont have a dist for your system: $OS $ARCH"
 			fail "You can ask one here: https://github.com/Masterminds/$PROJECT_NAME/issues"
 		else
-			GLIDE_TMP_FILE="/tmp/$GLIDE_DIST"
 			echo "Downloading $DOWNLOAD_URL"
 			getFile "$DOWNLOAD_URL" "$GLIDE_TMP_FILE"
 		fi
