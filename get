@@ -71,7 +71,7 @@ initDownloadTool() {
 		DOWNLOAD_TOOL="curl"
 	elif type "wget" > /dev/null; then
 		DOWNLOAD_TOOL="wget"
-	else 
+	else
 		fail "You need curl or wget as download tool. Please install it first before continue"
 	fi
 	echo "Using $DOWNLOAD_TOOL as download tool"
@@ -102,29 +102,39 @@ getFile() {
 	local url="$1"
 	local filePath="$2"
 	if [ "$DOWNLOAD_TOOL" = "curl" ]; then
-		curl -L "$url" -o "$filePath"
+		httpStatusCode=$(curl -s -w '%{http_code}' -L "$url" -o "$filePath")
 	elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
-		wget -O "$filePath" "$url"
+		body=$(wget --server-response --content-on-error -q -O "$filePath" "$url")
+		httpStatusCode=$(cat $tmpFile | awk '/^  HTTP/{print $2}')
 	fi
+	echo "$httpStatusCode"
 }
+
 
 downloadFile() {
 	get TAG https://glide.sh/version
 	echo "TAG=$TAG"
-	LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/tags/$TAG"
-	echo "LATEST_RELEASE_URL=$LATEST_RELEASE_URL"
-	get LATEST_RELEASE_JSON $LATEST_RELEASE_URL
 	GLIDE_DIST="glide-$TAG-$OS-$ARCH.tar.gz"
 	echo "GLIDE_DIST=$GLIDE_DIST"
-	# || true forces this command to not catch error if grep does not find anything
-	DOWNLOAD_URL=$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4 | grep "$GLIDE_DIST") || true
-	if [ -z "$DOWNLOAD_URL" ]; then
-        echo "Sorry, we dont have a dist for your system: $OS $ARCH"
-        fail "You can ask one here: https://github.com/Masterminds/$PROJECT_NAME/issues"
-	else
-		GLIDE_TMP_FILE="/tmp/$GLIDE_DIST"
-        echo "Downloading $DOWNLOAD_URL"
-		getFile "$DOWNLOAD_URL" "$GLIDE_TMP_FILE"
+	DOWNLOAD_URL="https://github.com/Masterminds/$PROJECT_NAME/releases/download/$TAG/$GLIDE_DIST"
+	GLIDE_TMP_FILE="/tmp/$GLIDE_DIST"
+	echo "Downloading $DOWNLOAD_URL"
+	httpStatusCode=$(getFile "$DOWNLOAD_URL" "$GLIDE_TMP_FILE")
+	if [ "$httpStatusCode" -ne 200 ]; then
+		echo "Did not find a release for your system: $OS $ARCH"
+		echo "Trying to find a release on the github api."
+		LATEST_RELEASE_URL="https://api.github.com/repos/Masterminds/$PROJECT_NAME/releases/tags/$TAG"
+		echo "LATEST_RELEASE_URL=$LATEST_RELEASE_URL"
+		get LATEST_RELEASE_JSON $LATEST_RELEASE_URL
+		# || true forces this command to not catch error if grep does not find anything
+		DOWNLOAD_URL=$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4 | grep "$GLIDE_DIST") || true
+		if [ -z "$DOWNLOAD_URL" ]; then
+			echo "Sorry, we dont have a dist for your system: $OS $ARCH"
+			fail "You can ask one here: https://github.com/Masterminds/$PROJECT_NAME/issues"
+		else
+			echo "Downloading $DOWNLOAD_URL"
+			getFile "$DOWNLOAD_URL" "$GLIDE_TMP_FILE"
+		fi
 	fi
 }
 
@@ -157,7 +167,7 @@ testVersion() {
 	echo "$GLIDE_VERSION installed successfully"
 }
 
-	
+
 # Execution
 
 #Stop execution on any error
