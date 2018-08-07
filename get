@@ -25,7 +25,7 @@ verifyGoInstallation() {
 	fi
 	if [ -z "$GOPATH" ]; then
 	    # Verify if default GOPATH of Go >=1.8 is used
-	    GOPATH="${HOME}/go"
+	    GOPATH=$(go env GOPATH)
 	    if [ ! -d "$GOPATH" ]; then
 		fail "$PROJECT_NAME needs environment variable "'$GOPATH'". Set it before continue."
 	    fi
