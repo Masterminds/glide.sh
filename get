@@ -24,7 +24,11 @@ verifyGoInstallation() {
 		fail "$PROJECT_NAME needs go. Please install it first."
 	fi
 	if [ -z "$GOPATH" ]; then
+	    # Verify if default GOPATH of Go >=1.8 is used
+	    GOPATH=$(go env GOPATH)
+	    if [ ! -d "$GOPATH" ]; then
 		fail "$PROJECT_NAME needs environment variable "'$GOPATH'". Set it before continue."
+	    fi
 	fi
 	if [ -n "$GOBIN" ]; then
 		if [ ! -d "$GOBIN" ]; then
